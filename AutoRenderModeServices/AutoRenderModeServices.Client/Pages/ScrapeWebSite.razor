@@ -1,8 +1,11 @@
 ﻿@page "/scrape"
 @using AutoRenderModeServices.Client.Components
+
 <PageTitle>Scrape Web Site</PageTitle>
 
 <h1>ScrapeWebSite</h1>
+
+@($"Browser:{OperatingSystem.IsBrowser()}")
 
 <WebScrape></WebScrape>
 

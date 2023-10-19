@@ -1,3 +1,5 @@
+using AutoRenderModeServices.Client.Features;
+using AutoRenderModeServices.Client.Features.WebScraper;
 using AutoRenderModeServices.Client.Pages;
 using AutoRenderModeServices.Components;
 
@@ -9,6 +11,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IWebScraperService, WebScraperServiceServer>();
 
 var app = builder.Build();
 
@@ -34,19 +38,16 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Counter).Assembly);
 
-app.MapGet("/webscraper/bing", async (IHttpClientFactory httpClientFactory) =>
+app.MapGet("/webscraper/bing", async (IWebScraperService _webScraper) =>
 {
-    var client = httpClientFactory.CreateClient();
-
-    var responseMessage = await client.GetAsync("https://www.bing.com");
-
-    if (responseMessage.IsSuccessStatusCode)
+    var responseText = await _webScraper.Get();
+    
+    if (string.IsNullOrWhiteSpace(responseText))
     {
-        var text = await responseMessage.Content.ReadAsStringAsync();
-        return Results.Ok(text);
+        return Results.Problem(detail: "Didn't work");
     }
 
-    return Results.Problem(detail: "Didn't work");
+    return Results.Ok(responseText);
 });
 
 app.Run();

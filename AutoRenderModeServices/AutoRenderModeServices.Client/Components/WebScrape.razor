@@ -1,5 +1,6 @@
-﻿@inject HttpClient Http
-@attribute [StreamRendering(true)]
+﻿@using AutoRenderModeServices.Client.Features.WebScraper
+@inject IWebScraperService _webScraper
+
 
 @if (Text is null)
 {
@@ -18,7 +19,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await Http.GetFromJsonAsync<string>("webscraper/bing");
-        Text = response;
+        Text = await _webScraper.Get();
     }
 }
