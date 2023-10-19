@@ -1,0 +1,24 @@
+﻿@inject HttpClient Http
+@attribute [StreamRendering(true)]
+
+@if (Text is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div style="border : solid; border-color : black; padding: 4px;">
+        @Text
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Loading...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await Http.GetFromJsonAsync<string>("webscraper/bing");
+        Text = response;
+    }
+}
