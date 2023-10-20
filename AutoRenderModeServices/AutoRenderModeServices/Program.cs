@@ -8,7 +8,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddHttpClient();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7202/") });
+builder.Services.AddHttpClient("BingHttpClient", client => client.BaseAddress = new Uri("https://www.bing.com"));
 
 var app = builder.Build();
 
@@ -36,9 +37,9 @@ app.MapRazorComponents<App>()
 
 app.MapGet("/webscraper/bing", async (IHttpClientFactory httpClientFactory) =>
 {
-    var client = httpClientFactory.CreateClient();
+    var client = httpClientFactory.CreateClient("BingHttpClient");
 
-    var responseMessage = await client.GetAsync("https://www.bing.com");
+    var responseMessage = await client.GetAsync(string.Empty);
 
     if (responseMessage.IsSuccessStatusCode)
     {
